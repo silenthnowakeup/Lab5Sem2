@@ -1,0 +1,10 @@
+IN:lms.bsuir.by A:192.168.251.23
+IN:vk.com A:195.485.211.24
+IN:lms2.bsuir.by CNAME:lms.bsuir.by
+IN:faceloo.ru CNAME:vk.com
+IN:lms3.bsuir.by CNAME:lms.bsuir.by
+IN:lolrofl.ru A:153.654.976.34
+IN:insta.com A:165.456.897.83
+IN:facebook.com CNAME:insta.com
+IN:snapchat.com CNAME:insta.com IN:hahahaha.by A:125.152.856.46
+IN:rofl.com CNAME:hahahaha.by
