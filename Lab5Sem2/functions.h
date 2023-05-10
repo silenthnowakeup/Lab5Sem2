@@ -38,10 +38,10 @@ HashItem* hashTableGet(HashTable* table, const char* key);
 HashItem* removeLast(HashTable* table);
 void hashTableSet(HashTable* table, const char* key, const char* value);
 void readDnsTable(HashTable* hashTable, const char* filename, const char* enterValue);
-void findIP(const HashTable* hashTable, const char* filename, const char* enterValue);
+void findIP(HashTable* hashTable, const char* filename, const char* enterValue);
 void hashTablePrint(HashTable* table);
 void saveFile(const char* filename, const char* domain, const char* ip,unsigned int k);
 char* inputStr();
 int menu();
-int searchByIPAddress(HashTable* table,const char* ip_address);
+int searchByIPAddress(const HashTable* table,const char* ip_address);
 #endif //LAB5SEM2_FUNCTIONS_H
