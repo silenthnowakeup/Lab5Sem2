@@ -287,7 +287,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
                 free(tmpcname);
                 free(tmpdomainName);
             }
-
+            free(tempDomainName);
             tempDomainName = NULL;
         }
 
