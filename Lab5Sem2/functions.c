@@ -215,11 +215,15 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
                     }
 
                     tmptoken = strtok(NULL, " ");
+                    free(tmpdomainName);
+                    free(tmpipAddress);
                 }
 
             }
         }
-
+        free(domainName);
+        free(ipAddress);
+        free(cname);
     }
     fclose(file);
 }
