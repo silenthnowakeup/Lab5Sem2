@@ -167,7 +167,7 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
     char *saveptr;
     while (fgets(line, sizeof(line), file)) {
         const char *token = strtok_r(line, " ", &saveptr);
-        char *domainName = NULL;
+        const char *domainName = NULL;
         char *ipAddress = NULL;
         char *cname = NULL;
         while (token != NULL) {
@@ -232,7 +232,8 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
     }
 
     char line[512];
-    char *saveptr1, *saveptr2, *saveptr3;
+    char *saveptr1;
+    char *saveptr2;
     while (fgets(line, sizeof(line), file)) {
         const char *token = strtok_r(line, " ", &saveptr1);
         const char *domainName = NULL;
@@ -253,7 +254,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
         }
 
         if ((domainName != NULL && ipAddress != NULL) && strcmp(enterValue, ipAddress) == 0) {
-            char *tempDomainName = domainName;
+            const char *tempDomainName = domainName;
             hashTableSet(hashTable, domainName, ipAddress);
             fseek(file, 0, SEEK_SET);
             while (fgets(line, sizeof(line), file)) {
@@ -292,7 +293,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
 
 
 
-void hashTablePrint(HashTable* table) {
+void hashTablePrint(const HashTable* table) {
     if (table == NULL) {
         printf("Hash table is NULL\n");
         return;
