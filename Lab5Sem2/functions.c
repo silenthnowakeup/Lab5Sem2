@@ -166,8 +166,9 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
     char *domainName = NULL;
     char *ipAddress = NULL;
     char *cname = NULL;
+    char *saveptr = NULL;
     while (fgets(line, sizeof(line), file)) {
-        char *token = strtok(line, " ");
+        const char *token = strtok_r(line, " ", &saveptr);
         while (token != NULL) {
             if (strncmp(token, "A:", 2) == 0) {
                 free(ipAddress);
@@ -182,11 +183,11 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
                 domainName = strdup(token + 3);
             }
 
-            token = strtok(NULL, " ");
+            token = strtok_r(NULL, " ", &saveptr);
         }
 
         if (cname != NULL && domainName != NULL) {
-            HashItem *item = hashTableGet(hashTable, cname);
+            const HashItem *item = hashTableGet(hashTable, cname);
             if (item != NULL) {
                 free(ipAddress);
                 ipAddress = strdup(item->value);
@@ -287,7 +288,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
                 free(tmpdomainName);
             }
 
-            free((char*)tempDomainName);
+            free((const char*)tempDomainName);
             tempDomainName = NULL;
         }
 
