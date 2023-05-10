@@ -30,6 +30,7 @@ HashItem* createItem(const char* key,const char* value);
 HashTable* createTable(int size);
 void freeItem(HashItem* item);
 void freeTable(HashTable* table);
+void processDnsTableLine(HashTable* hashTable, const char* enterValue, char* line);
 bool isValidIp(const char *ipAddress);
 bool checkDuplicate(const char* filename, const char* domain);
 unsigned int hashFunction(const char* str, int size);
