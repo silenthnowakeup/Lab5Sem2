@@ -213,7 +213,6 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
 
 
 
-
 void findIP(HashTable* hashTable, const char* filename, const char* enterValue) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -222,13 +221,18 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
     }
 
     char line[512];
-    char *saveptr1;
-    char *saveptr2;
+    char *saveptr1 = NULL;
+    char *saveptr2 = NULL;
+    char *domainName = NULL;
+    char *ipAddress = NULL;
+    char *cname = NULL;
+
     while (fgets(line, sizeof(line), file)) {
         const char *token = strtok_r(line, " ", &saveptr1);
-        const char *domainName = NULL;
-        char *ipAddress = NULL;
-        char *cname = NULL;
+        domainName = NULL;
+        ipAddress = NULL;
+        cname = NULL;
+
         while (token != NULL) {
             if (strncmp(token, "A:", 2) == 0) {
                 ipAddress = strdup(token + 2);
@@ -247,11 +251,13 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
             const char *tempDomainName = strdup(domainName); // create a copy to avoid modifying the original
             hashTableSet(hashTable, domainName, ipAddress);
             fseek(file, 0, SEEK_SET);
+
             while (fgets(line, sizeof(line), file)) {
                 const char *tmptoken = strtok_r(line, " ", &saveptr2);
-                const char *tmpdomainName = NULL;
+                char *tmpdomainName = NULL;
                 char *tmpipAddress = NULL;
                 char *tmpcname = NULL;
+
                 while (tmptoken != NULL) {
                     if (strncmp(tmptoken, "A:", 2) == 0) {
                         tmpipAddress = strdup(tmptoken + 2);
@@ -263,27 +269,29 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
                         tmpdomainName = strdup(tmptoken + 3);
                     }
 
-                    if(tmpcname!=NULL && strcmp(tmpcname,tempDomainName) == 0)
-                    {
-                        hashTableSet(hashTable,tmpdomainName,ipAddress);
+                    if (tmpcname != NULL && strcmp(tmpcname, tempDomainName) == 0) {
+                        hashTableSet(hashTable, tmpdomainName, ipAddress);
                     }
 
                     tmptoken = strtok_r(NULL, " ", &saveptr2);
                 }
-                free(tmpipAddress); // free dynamically allocated memory
+
+                free(tmpipAddress);
                 free(tmpcname);
                 free(tmpdomainName);
             }
-            free((char*)tempDomainName); // free dynamically allocated memory
+
+            free((char*)tempDomainName);
         }
 
-        free(ipAddress); // free dynamically allocated memory
+        free(ipAddress);
         free(cname);
         free(domainName);
     }
 
     fclose(file);
 }
+
 
 
 
