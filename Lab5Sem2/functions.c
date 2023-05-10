@@ -243,7 +243,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
                 cname = strdup(token + 6);
                 cname[strcspn(cname, "\n")] = '\0';
             } else if (strncmp(token, "IN:", 3) == 0) {
-                free(domainName)
+                free(domainName);
                 domainName = strdup(token + 3);
             }
 
