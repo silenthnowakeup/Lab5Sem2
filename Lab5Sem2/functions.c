@@ -282,11 +282,16 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
             }
 
             free((char*)tempDomainName);
+            tempDomainName = NULL;
         }
 
         free(ipAddress);
         free(cname);
         free(domainName);
+        ipAddress = NULL;
+        cname = NULL;
+        domainName = NULL;
+
     }
 
     fclose(file);
