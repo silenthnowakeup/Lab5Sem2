@@ -232,8 +232,9 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
     }
 
     char line[512];
+    char *saveptr1, *saveptr2, *saveptr3;
     while (fgets(line, sizeof(line), file)) {
-        char *token = strtok(line, " ");
+        char *token = strtok_r(line, " ", &saveptr1);
         char *domainName = NULL;
         char *ipAddress = NULL;
         char *cname = NULL;
@@ -248,8 +249,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
                 domainName = strdup(token + 3);
             }
 
-
-            token = strtok(NULL, " ");
+            token = strtok_r(NULL, " ", &saveptr1);
         }
 
         if ((domainName != NULL && ipAddress != NULL) && strcmp(enterValue, ipAddress) == 0) {
@@ -257,7 +257,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
             hashTableSet(hashTable, domainName, ipAddress);
             fseek(file, 0, SEEK_SET);
             while (fgets(line, sizeof(line), file)) {
-                char *tmptoken = strtok(line, " ");
+                char *tmptoken = strtok_r(line, " ", &saveptr2);
                 char *tmpdomainName = NULL;
                 char *tmpipAddress = NULL;
                 char *tmpcname = NULL;
@@ -277,13 +277,16 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
                         hashTableSet(hashTable,tmpdomainName,ipAddress);
                     }
 
-                    tmptoken = strtok(NULL, " ");
+                    tmptoken = strtok_r(NULL, " ", &saveptr2);
                 }
 
             }
         }
     }
+
+    fclose(file);
 }
+
 
 
 
