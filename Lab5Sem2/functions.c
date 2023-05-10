@@ -340,24 +340,30 @@ bool isValidIp(const char* ip) {
 
 bool checkDuplicate(const char* filename, const char* domain) {
     FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Failed to open file: %s\n", filename);
+        return false;
+    }
+
     char line[256];
+    char *saveptr1;
     while (fgets(line, sizeof(line), file)) {
-        const char *token = strtok(line, " ");
+        const char *token = strtok_r(line, " ", &saveptr1);
         const char *domainName = NULL;
         while (token != NULL) {
             if (strncmp(token, "IN:", 3) == 0) {
                 domainName = strdup(token + 3);
             }
-            if (strcmp(domainName, domain) == 0)
+            if (domainName != NULL && strcmp(domainName, domain) == 0)
                 return true;
 
-
-            token = strtok(NULL, " ");
+            token = strtok_r(NULL, " ", &saveptr1);
         }
     }
     fclose(file);
     return false;
 }
+
 
 
 
