@@ -307,7 +307,31 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
 
 
 
+char* inputStr() {
+    char* str = NULL;
+    int pos = 0;
+    int len = 0;
+    int c = getchar();
 
+    while (c != '\n') {
+        if (pos == len) {
+            len += 10;
+            str = (char*) realloc(str, len * sizeof(char));
+        }
+
+        str[pos] = (char)c;
+        pos++;
+        c = getchar();
+    }
+
+    if (pos == len) {
+        len++;
+        str = (char*) realloc(str, len * sizeof(char));
+    }
+
+    str[pos] = '\0';
+    return str;
+}
 
 
 
