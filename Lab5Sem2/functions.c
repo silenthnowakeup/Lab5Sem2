@@ -43,6 +43,9 @@ void freeTable(HashTable* table) {
 }
 
 unsigned int hashFunction(const char* key, int size) {
+    if (key == NULL) {
+        return 0; 
+    }
     unsigned int hash = 0;
     for (int i = 0; i < strlen(key); i++) {
         hash = hash * 31 + key[i];
