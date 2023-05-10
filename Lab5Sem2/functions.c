@@ -93,7 +93,7 @@ HashItem* hashTableGet(HashTable* table, const char* key)
     return NULL;
 }
 
-int searchByIPAddress(HashTable* table, const char* ip_address) {
+int searchByIPAddress(const HashTable* table, const char* ip_address) {
     int count = 0;
 
     if (!table || !ip_address) {
@@ -215,8 +215,7 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
                     }
 
                     tmptoken = strtok(NULL, " ");
-                    free(tmpdomainName);
-                    free(tmpipAddress);
+
                 }
 
             }
