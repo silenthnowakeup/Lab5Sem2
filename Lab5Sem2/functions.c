@@ -342,8 +342,8 @@ bool checkDuplicate(const char* filename, const char* domain) {
     FILE* file = fopen(filename, "r");
     char line[256];
     while (fgets(line, sizeof(line), file)) {
-        char *token = strtok(line, " ");
-        char *domainName = NULL;
+        const char *token = strtok(line, " ");
+        const char *domainName = NULL;
         while (token != NULL) {
             if (strncmp(token, "IN:", 3) == 0) {
                 domainName = strdup(token + 3);
