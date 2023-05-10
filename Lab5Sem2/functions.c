@@ -156,58 +156,78 @@ void hashTableSet(HashTable* table, const char* key, const char* value)
 }
 
 
-void processDnsTableLine(HashTable* hashTable, const char* enterValue, char* line) {
-    const char *token = strtok(line, " ");
-    const char *domainName = NULL;
-    char *ipAddress = NULL;
-    char *cname = NULL;
-
-    while (token != NULL) {
-        if (strncmp(token, "A:", 2) == 0) {
-            ipAddress = strdup(token + 2);
-            ipAddress[strcspn(ipAddress,"\n")] = '\0';
-        } else if (strncmp(token, "CNAME:", 6) == 0) {
-            cname = strdup(token + 6);
-            cname[strcspn(cname, "\n")] = '\0';
-        } else if (strncmp(token, "IN:", 3) == 0) {
-            domainName = strdup(token + 3);
-        }
-
-        token = strtok(NULL, " ");
-    }
-
-    if (cname != NULL && domainName != NULL) {
-        const HashItem *item = hashTableGet(hashTable, cname);
-        if (item != NULL) {
-            ipAddress = strdup(item->value);
-        }
-    }
-
-    if ((domainName != NULL && ipAddress != NULL) && strcmp(domainName, enterValue) == 0) {
-        hashTableSet(hashTable, domainName, ipAddress);
-    } else if (cname != NULL && strcmp(domainName, enterValue) == 0) {
-        fseek(file, 0, SEEK_SET);
-        char line[512];
-        char *saveptr;
-        while (fgets(line, sizeof(line), file)) {
-            processDnsTableLine(hashTable, domainName, line);
-        }
-    }
-}
-
 void readDnsTable(HashTable* hashTable, const char* filename, const char* enterValue) {
-    FILE *file = fopen(filename, "r");
+    FILE* file = fopen(filename, "r");
     if (file == NULL) {
         printf("Failed to open file: %s\n", filename);
         return;
     }
 
     char line[512];
+    char* saveptr;
     while (fgets(line, sizeof(line), file)) {
-        processDnsTableLine(hashTable, enterValue, line);
+        const char* token = strtok_r(line, " ", &saveptr);
+        const char* domainName = NULL;
+        char* ipAddress = NULL;
+        char* cname = NULL;
+
+        while (token != NULL) {
+            if (strncmp(token, "A:", 2) == 0) {
+                ipAddress = strdup(token + 2);
+                ipAddress[strcspn(ipAddress, "\n")] = '\0';
+            } else if (strncmp(token, "CNAME:", 6) == 0) {
+                cname = strdup(token + 6);
+                cname[strcspn(cname, "\n")] = '\0';
+            } else if (strncmp(token, "IN:", 3) == 0) {
+                domainName = strdup(token + 3);
+            }
+
+            token = strtok_r(NULL, " ", &saveptr);
+        }
+
+        if (cname != NULL && domainName != NULL) {
+            const HashItem* item = hashTableGet(hashTable, cname);
+            if (item != NULL) {
+                ipAddress = strdup(item->value);
+            }
+        }
+
+        if (domainName == NULL || strcmp(domainName, enterValue) != 0) {
+            continue;
+        }
+
+        if (ipAddress != NULL) {
+            hashTableSet(hashTable, domainName, ipAddress);
+        } else if (cname != NULL) {
+            fseek(file, 0, SEEK_SET);
+            while (fgets(line, sizeof(line), file)) {
+                const char* tmptoken = strtok_r(line, " ", &saveptr);
+                const char* tmpdomainName = NULL;
+                char* tmpipAddress = NULL;
+
+                while (tmptoken != NULL) {
+                    if (strncmp(tmptoken, "IN:", 3) == 0) {
+                        tmpdomainName = strdup(tmptoken + 3);
+                        if (strcmp(tmpdomainName, cname) == 0) {
+                            tmptoken = strtok_r(NULL, " ", &saveptr);
+                            if (strncmp(tmptoken, "A:", 2) == 0) {
+                                tmpipAddress = strdup(tmptoken + 2);
+                                tmpipAddress[strcspn(tmpipAddress, "\n")] = '\0';
+                                hashTableSet(hashTable, domainName, tmpipAddress);
+                                break;
+                            }
+                        }
+                    }
+
+                    tmptoken = strtok_r(NULL, " ", &saveptr);
+                }
+            }
+        }
     }
+
     fclose(file);
 }
+
 
 
 
