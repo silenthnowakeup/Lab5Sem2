@@ -224,7 +224,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
     char *saveptr1 = NULL;
     char *saveptr2 = NULL;
     char *domainName = NULL;
-    char *ipAddress = NULL;
+    char *ipAddress = (char*)calloc(20,sizeof(char));
     char *cname = NULL;
 
     while (fgets(line, sizeof(line), file)) {
