@@ -6,6 +6,9 @@
 
 HashItem* createItem(const char* key, const char* value) {
     HashItem* item = (HashItem*) malloc(sizeof(HashItem));
+    if (key == NULL) {
+        return 0; // or some other default value
+    }
     item->key = (char*) malloc(strlen(key) + 1);
     item->value = (char*) malloc(strlen(value) + 1);
     strcpy(item->key, key);
