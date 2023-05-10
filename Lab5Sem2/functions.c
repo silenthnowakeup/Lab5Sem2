@@ -387,56 +387,37 @@ bool checkDuplicate(const char* filename, const char* domain) {
 
 
 
-void saveFile(const char* filename, const char* domain, const char* ip,unsigned int k)
+void saveFile(const char* filename, const char* domain, const char* ip, unsigned int k)
 {
-    FILE* file = fopen(filename,"a");
+    FILE* file = fopen(filename, "a");
+    if (file == NULL) {
+        printf("Failed to open file: %s\n", filename);
+        return;
+    }
 
     if (!isValidIp(ip)) {
         printf("Invalid IP address: %s\n", ip);
+        fclose(file);
         return;
     }
+
     if (checkDuplicate(filename, domain)) {
         printf("Record already exists in the file.\n");
+        fclose(file);
         return;
     }
 
-    if (k==1)
-    {
-        fprintf (file,"IN:%s A:%s\n",domain, ip);
+    if (k == 1) {
+        fprintf(file, "IN:%s A:%s\n", domain, ip);
+    } else if (k == 2) {
+        fprintf(file, "IN:%s CNAME:%s\n", domain, ip);
     }
-    else if (k==2)
-    {
-        fprintf(file,"IN:%s CNAME:%s\n",domain, ip);
+
+    if (fclose(file) != 0) {
+        printf("Failed to close file: %s\n", filename);
     }
-    fclose(file);
 }
 
-
-char* inputStr() {
-    char* str = NULL;
-    int pos = 0;
-    int len = 0;
-    int c = getchar();
-
-    while (c != '\n') {
-        if (pos == len) {
-            len += 10;
-            str = (char*) realloc(str, len * sizeof(char));
-        }
-
-        str[pos] = (char)c;
-        pos++;
-        c = getchar();
-    }
-
-    if (pos == len) {
-        len++;
-        str = (char*) realloc(str, len * sizeof(char));
-    }
-
-    str[pos] = '\0';
-    return str;
-}
 
 int menu()
 {
