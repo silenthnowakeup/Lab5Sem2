@@ -155,6 +155,61 @@ void hashTableSet(HashTable* table, const char* key, const char* value)
     }
 }
 
+void readDnsTable(HashTable* hashTable, const char* filename, const char* enterValue) {
+    FILE *file = fopen(filename, "r");
+    if (file == NULL) {
+        printf("Failed to open file: %s\n", filename);
+        return;
+    }
+
+    char line[512];
+    char *domainName = NULL;
+    char *ipAddress = NULL;
+    char *cname = NULL;
+    while (fgets(line, sizeof(line), file)) {
+        char *token = strtok(line, " ");
+        while (token != NULL) {
+            if (strncmp(token, "A:", 2) == 0) {
+                free(ipAddress);
+                ipAddress = strdup(token + 2);
+                ipAddress[strcspn(ipAddress,"\n")] = '\0';
+            } else if (strncmp(token, "CNAME:", 6) == 0) {
+                free(cname);
+                cname = strdup(token + 6);
+                cname[strcspn(cname, "\n")] = '\0';
+            } else if (strncmp(token, "IN:", 3) == 0) {
+                free(domainName);
+                domainName = strdup(token + 3);
+            }
+
+            token = strtok(NULL, " ");
+        }
+
+        if (cname != NULL && domainName != NULL) {
+            HashItem *item = hashTableGet(hashTable, cname);
+            if (item != NULL) {
+                free(ipAddress);
+                ipAddress = strdup(item->value);
+            }
+        }
+
+        if ((domainName != NULL && ipAddress != NULL) && strcmp(domainName, enterValue) == 0) {
+            hashTableSet(hashTable, domainName, ipAddress);
+            free(cname);
+            cname = NULL;
+            free(domainName);
+            domainName = NULL;
+            free(ipAddress);
+            ipAddress = NULL;
+        }
+    }
+
+    fclose(file);
+
+    free(cname);
+    free(domainName);
+    free(ipAddress);
+}
 
 
 
