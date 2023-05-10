@@ -157,59 +157,56 @@ void hashTableSet(HashTable* table, const char* key, const char* value)
 
 
 void readDnsTable(HashTable* hashTable, const char* filename, const char* enterValue) {
-    FILE* file = fopen(filename, "r");
+    FILE *file = fopen(filename, "r");
     if (file == NULL) {
         printf("Failed to open file: %s\n", filename);
         return;
     }
 
     char line[512];
-    char* saveptr;
+    char *domainName = NULL;  // add domainName initialization outside loop
     while (fgets(line, sizeof(line), file)) {
-        const char* token = strtok_r(line, " ", &saveptr);
-        const char* domainName = NULL;
-        char* ipAddress = NULL;
-        char* cname = NULL;
-
+        char *token = strtok(line, " ");
+        char *ipAddress = NULL;
+        char *cname = NULL;
         while (token != NULL) {
             if (strncmp(token, "A:", 2) == 0) {
                 ipAddress = strdup(token + 2);
-                ipAddress[strcspn(ipAddress, "\n")] = '\0';
+                ipAddress[strcspn(ipAddress,"\n")] = '\0';
             } else if (strncmp(token, "CNAME:", 6) == 0) {
                 cname = strdup(token + 6);
                 cname[strcspn(cname, "\n")] = '\0';
             } else if (strncmp(token, "IN:", 3) == 0) {
+                if (domainName != NULL) {  // check if domainName was previously allocated
+                    free(domainName);  // free previously allocated memory
+                }
                 domainName = strdup(token + 3);
             }
 
-            token = strtok_r(NULL, " ", &saveptr);
+            token = strtok(NULL, " ");
         }
 
         if (cname != NULL && domainName != NULL) {
-            const HashItem* item = hashTableGet(hashTable, cname);
+            HashItem *item = hashTableGet(hashTable, cname);
             if (item != NULL) {
                 ipAddress = strdup(item->value);
             }
         }
 
-        if (domainName == NULL || strcmp(domainName, enterValue) != 0) {
-            continue;
-        }
-
-        if (ipAddress != NULL) {
+        if ((domainName != NULL && ipAddress != NULL) && strcmp(domainName, enterValue) == 0) {
             hashTableSet(hashTable, domainName, ipAddress);
-        } else if (cname != NULL) {
+        } else if (cname != NULL && strcmp(domainName, enterValue) == 0) {
             fseek(file, 0, SEEK_SET);
-            while (fgets(line, sizeof(line), file)) {
-                const char* tmptoken = strtok_r(line, " ", &saveptr);
-                const char* tmpdomainName = NULL;
-                char* tmpipAddress = NULL;
 
+            while (fgets(line, sizeof(line), file)) {
+                char* tmptoken = strtok(line, " ");
+                char* tmpdomainName = NULL;
+                char* tmpipAddress = NULL;
                 while (tmptoken != NULL) {
                     if (strncmp(tmptoken, "IN:", 3) == 0) {
                         tmpdomainName = strdup(tmptoken + 3);
                         if (strcmp(tmpdomainName, cname) == 0) {
-                            tmptoken = strtok_r(NULL, " ", &saveptr);
+                            tmptoken = strtok(NULL, " ");
                             if (strncmp(tmptoken, "A:", 2) == 0) {
                                 tmpipAddress = strdup(tmptoken + 2);
                                 tmpipAddress[strcspn(tmpipAddress, "\n")] = '\0';
@@ -219,14 +216,18 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
                         }
                     }
 
-                    tmptoken = strtok_r(NULL, " ", &saveptr);
+                    tmptoken = strtok(NULL, " ");
                 }
+
             }
         }
     }
-
+    if (domainName != NULL) {  // check if domainName was allocated
+        free(domainName);  // free allocated memory
+    }
     fclose(file);
 }
+
 
 
 
