@@ -166,7 +166,7 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
     char line[512];
     char *saveptr;
     while (fgets(line, sizeof(line), file)) {
-        char *token = strtok_r(line, " ", &saveptr);
+        const char *token = strtok_r(line, " ", &saveptr);
         char *domainName = NULL;
         char *ipAddress = NULL;
         char *cname = NULL;
@@ -185,7 +185,7 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
         }
 
         if (cname != NULL && domainName != NULL) {
-            HashItem *item = hashTableGet(hashTable, cname);
+            const HashItem *item = hashTableGet(hashTable, cname);
             if (item != NULL) {
                 ipAddress = strdup(item->value);
             }
@@ -197,8 +197,8 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
             fseek(file, 0, SEEK_SET);
 
             while (fgets(line, sizeof(line), file)) {
-                char* tmptoken = strtok_r(line, " ", &saveptr);
-                char* tmpdomainName = NULL;
+                const char* tmptoken = strtok_r(line, " ", &saveptr);
+                const char* tmpdomainName = NULL;
                 char* tmpipAddress = NULL;
                 while (tmptoken != NULL) {
                     if (strncmp(tmptoken, "IN:", 3) == 0) {
@@ -234,8 +234,8 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
     char line[512];
     char *saveptr1, *saveptr2, *saveptr3;
     while (fgets(line, sizeof(line), file)) {
-        char *token = strtok_r(line, " ", &saveptr1);
-        char *domainName = NULL;
+        const char *token = strtok_r(line, " ", &saveptr1);
+        const char *domainName = NULL;
         char *ipAddress = NULL;
         char *cname = NULL;
         while (token != NULL) {
@@ -257,8 +257,8 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
             hashTableSet(hashTable, domainName, ipAddress);
             fseek(file, 0, SEEK_SET);
             while (fgets(line, sizeof(line), file)) {
-                char *tmptoken = strtok_r(line, " ", &saveptr2);
-                char *tmpdomainName = NULL;
+                const char *tmptoken = strtok_r(line, " ", &saveptr2);
+                const char *tmpdomainName = NULL;
                 char *tmpipAddress = NULL;
                 char *tmpcname = NULL;
                 while (tmptoken != NULL) {
