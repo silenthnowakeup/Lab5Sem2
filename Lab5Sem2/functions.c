@@ -244,7 +244,7 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
         }
 
         if ((domainName != NULL && ipAddress != NULL) && strcmp(enterValue, ipAddress) == 0) {
-            const char *tempDomainName = domainName;
+            const char *tempDomainName = strdup(domainName); // create a copy to avoid modifying the original
             hashTableSet(hashTable, domainName, ipAddress);
             fseek(file, 0, SEEK_SET);
             while (fgets(line, sizeof(line), file)) {
@@ -270,13 +270,21 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
 
                     tmptoken = strtok_r(NULL, " ", &saveptr2);
                 }
-
+                free(tmpipAddress); // free dynamically allocated memory
+                free(tmpcname);
+                free(tmpdomainName);
             }
+            free((char*)tempDomainName); // free dynamically allocated memory
         }
+
+        free(ipAddress); // free dynamically allocated memory
+        free(cname);
+        free(domainName);
     }
 
     fclose(file);
 }
+
 
 
 
