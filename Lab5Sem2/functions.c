@@ -263,12 +263,15 @@ void findIP(HashTable* hashTable, const char* filename, const char* enterValue) 
 
                 while (tmptoken != NULL) {
                     if (strncmp(tmptoken, "A:", 2) == 0) {
+                        free(tmpipAddress);
                         tmpipAddress = strdup(tmptoken + 2);
                         tmpipAddress[strcspn(tmpipAddress, "\n")] = '\0';
                     } else if (strncmp(tmptoken, "CNAME:", 6) == 0) {
+                        free(tmpcname);
                         tmpcname = strdup(tmptoken + 6);
                         tmpcname[strcspn(tmpcname, "\n")] = '\0';
                     } else if (strncmp(tmptoken, "IN:", 3) == 0) {
+                        free(tmpdomainName);
                         tmpdomainName = strdup(tmptoken + 3);
                     }
 
