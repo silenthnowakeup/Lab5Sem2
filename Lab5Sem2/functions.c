@@ -156,7 +156,6 @@ void hashTableSet(HashTable* table, const char* key, const char* value)
 }
 
 
-
 void readDnsTable(HashTable* hashTable, const char* filename, const char* enterValue) {
     FILE *file = fopen(filename, "r");
     if (file == NULL) {
@@ -165,8 +164,9 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
     }
 
     char line[512];
+    char *saveptr;
     while (fgets(line, sizeof(line), file)) {
-        char *token = strtok(line, " ");
+        char *token = strtok_r(line, " ", &saveptr);
         char *domainName = NULL;
         char *ipAddress = NULL;
         char *cname = NULL;
@@ -181,7 +181,7 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
                 domainName = strdup(token + 3);
             }
 
-            token = strtok(NULL, " ");
+            token = strtok_r(NULL, " ", &saveptr);
         }
 
         if (cname != NULL && domainName != NULL) {
@@ -197,14 +197,14 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
             fseek(file, 0, SEEK_SET);
 
             while (fgets(line, sizeof(line), file)) {
-                char* tmptoken = strtok(line, " ");
+                char* tmptoken = strtok_r(line, " ", &saveptr);
                 char* tmpdomainName = NULL;
                 char* tmpipAddress = NULL;
                 while (tmptoken != NULL) {
                     if (strncmp(tmptoken, "IN:", 3) == 0) {
                         tmpdomainName = strdup(tmptoken + 3);
                         if (strcmp(tmpdomainName, cname) == 0) {
-                            tmptoken = strtok(NULL, " ");
+                            tmptoken = strtok_r(NULL, " ", &saveptr);
                             if (strncmp(tmptoken, "A:", 2) == 0) {
                                 tmpipAddress = strdup(tmptoken + 2);
                                 tmpipAddress[strcspn(tmpipAddress, "\n")] = '\0';
@@ -214,18 +214,15 @@ void readDnsTable(HashTable* hashTable, const char* filename, const char* enterV
                         }
                     }
 
-                    tmptoken = strtok(NULL, " ");
-
+                    tmptoken = strtok_r(NULL, " ", &saveptr);
                 }
 
             }
         }
-        free(domainName);
-        free(ipAddress);
-        free(cname);
     }
     fclose(file);
 }
+
 
 void findIP(HashTable* hashTable, const char* filename, const char* enterValue) {
     FILE *file = fopen(filename, "r");
