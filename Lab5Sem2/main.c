@@ -2,12 +2,12 @@
 
 
 int main() {
-    char* filename;
-    char* enterValue;
+    const char* filename;
+    const char* enterValue;
     unsigned int k;
     HashTable* table = createTable(3);
-    char* domain;
-    char* ip;
+    const char* domain;
+    const char* ip;
     int count;
 
 while(1)
@@ -17,7 +17,7 @@ while(1)
         case 1:
             printf("\nEnter Value::");
             enterValue = inputStr();
-            HashItem* item = hashTableGet(table, enterValue);
+            const HashItem* item = hashTableGet(table, enterValue);
             if (item == NULL) {
                 printf("\nThis value not found in hash-table");
                 printf("\nEnter filename::");
@@ -32,7 +32,7 @@ while(1)
             domain = inputStr();
             printf("\nEnter what you want to add:: (1. Domain with Ip,  Domain with CNAME) :: ");
             scanf("%d",&k);
-            char temp = getchar();
+            int temp = getchar();
             printf("\nEnter your Value::");
             enterValue = inputStr();
             saveFile(filename,domain,enterValue,k);
