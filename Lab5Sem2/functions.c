@@ -6,9 +6,6 @@
 
 HashItem* createItem(const char* key, const char* value) {
     HashItem* item = (HashItem*) malloc(sizeof(HashItem));
-    if (key == NULL) {
-        return 0; // or some other default value
-    }
     item->key = (char*) malloc(strlen(key) + 1);
     item->value = (char*) malloc(strlen(value) + 1);
     strcpy(item->key, key);
@@ -46,9 +43,6 @@ void freeTable(HashTable* table) {
 }
 
 unsigned int hashFunction(const char* key, int size) {
-    if (key == NULL) {
-        return 0; 
-    }
     unsigned int hash = 0;
     for (int i = 0; i < strlen(key); i++) {
         hash = hash * 31 + key[i];
